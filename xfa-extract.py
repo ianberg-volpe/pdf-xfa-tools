@@ -16,26 +16,27 @@ USAGE:
     quit()
 
 folderPath = sys.argv[1] # starting from 1 because the 0th arg is the file name of this script
-fileNames = os.listdir(folderPath)
+fileNames = [os.path.join(folderPath, f) for f in os.listdir(folderPath)]
 
 for fileName in fileNames:
-    with pikepdf.Pdf.open(fileName) as pdfData:
-        try:
+    try:
+        with pikepdf.Pdf.open(fileName) as pdfData:
             xfaDict = XfaObj(pdfData)
-        except AttributeError:
-            continue
 
-        folderName = re.sub(r'\.pdf$', '', os.path.basename(fileName))
-        
-        os.makedirs(f'./out/{folderName}', exist_ok=True)
-        
-        for key in xfaDict.keys():
-            outFile = re.sub(r'[<>: ]','',key) 
-            outFile = re.sub('/','END',outFile)
-            fullPath = f'./{folderName}/{outFile}.xml'
-            with open(fullPath, 'w', encoding="utf-8") as f:
-                data = xfaDict[key]
-                f.write(data)
-
+            folderName = re.sub(r'\.pdf$', '', os.path.basename(fileName))
+            
+            os.makedirs(f'./out/{folderName}', exist_ok=True)
+            
+            for key in xfaDict.keys():
+                outFile = re.sub(r'[<>: ]','',key) 
+                outFile = re.sub('/','END',outFile)
+                fullPath = f'./out/{folderName}/{outFile}.xml'
+                with open(fullPath, 'w', encoding="utf-8") as f:
+                    data = xfaDict[key]
+                    f.write(data)
+    except pikepdf._core.PdfError:
+        continue
+    except AttributeError:
+        continue
 
 
