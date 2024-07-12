@@ -1,3 +1,5 @@
 
 __pycache__/
 out/
+/.ipynb_checkpoints
+/decos/.ipynb_checkpoints

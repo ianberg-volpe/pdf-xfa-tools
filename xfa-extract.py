@@ -17,6 +17,7 @@ USAGE:
 
 folderPath = sys.argv[1] # starting from 1 because the 0th arg is the file name of this script
 fileNames = [os.path.join(folderPath, f) for f in os.listdir(folderPath)]
+fileNames = [f for f in fileNames if f.endswith("pdf")]
 
 for fileName in fileNames:
     try:
