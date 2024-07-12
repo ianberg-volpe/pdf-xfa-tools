@@ -6,7 +6,7 @@ class XfaObj(dict):
         self.xfaDict = {}
         
         for i,item in enumerate(self.root):
-            if(i % 2 == 0 and isinstance(item,pikepdf.String)):
+            if(i % 2 == 0 and isinstance(item,pypdf.generic.TextStringObject)):
                 #print(f'label {i}: {item}')
                 label = f'{item}'
                 self.xfaDict[label] = self.root[i+1]
@@ -16,7 +16,7 @@ class XfaObj(dict):
          
 
     def __getitem__(self,key):
-        if(isinstance(self.xfaDict[key],pikepdf.Stream)):
+        if(isinstance(self.xfaDict[key].get_object(),pypdf.generic.StreamObject)):
             return self.xfaDict[key].get_data().decode('utf-8')
         else:
             print('xfa item detected was not a stream')
