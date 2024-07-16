@@ -2,28 +2,20 @@ import pypdf
 class XfaObj(dict):
     def __init__(self, sourcePdf):
         self.source = sourcePdf
-        self.root = self.source.root_object['/AcroForm']['/XFA']
-        self.xfaDict = {}
+        self.xfaDict = self.source.xfa
         
-        for i,item in enumerate(self.root):
-            if(i % 2 == 0 and isinstance(item,pypdf.generic.TextStringObject)):
-                #print(f'label {i}: {item}')
-                label = f'{item}'
-                self.xfaDict[label] = self.root[i+1]
         #this next line is way more important/useful than it appears!
         # it makes someone able to treat an XfaObj as a dict pretty much.
         super(XfaObj,self).__init__(self.xfaDict)
-         
-
+        
     def __getitem__(self,key):
-        if(isinstance(self.xfaDict[key].get_object(),pypdf.generic.StreamObject)):
-            return self.xfaDict[key].get_data().decode('utf-8')
+        if(isinstance(self.xfaDict[key],bytes)):
+            return self.xfaDict[key].decode('utf-8')
         else:
             print('xfa item detected was not a stream')
             return self.xfaDict[key]
 
-    #note: pikepdf.Stream requires straight up bytes. 
     def __setitem__(self,key,value):
         if(isinstance(value,str)):
             value = bytes(value,'utf-8')
-        self.xfaDict[key].set_data(value)
+        self.xfaDict[key] = value
